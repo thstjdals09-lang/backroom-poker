@@ -34,6 +34,12 @@ export default function StoryPlayer() {
       dispatch({ type: 'GOTO', beatId: beat.next });
     } else if (beat.type === 'end') {
       dispatch({ type: 'GO_HOME' });
+    } else if (beat.type === 'sceneLabel') {
+      playSfx('eventTrigger');
+    } else if (beat.type === 'statusPanel') {
+      playSfx('fluorescentHum');
+    } else if (beat.type === 'timeSkip') {
+      playSfx('chip');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [beat?.id]);
@@ -77,7 +83,7 @@ export default function StoryPlayer() {
           className="tap-area"
           onClick={() => (isLast ? goto(beat.next) : setLineIndex((i) => i + 1))}
         >
-          {npc && <PortraitFrame name={npc.name} />}
+          {npc && <PortraitFrame name={npc.name} npcId={npc.id} />}
           <div className="dialogue-box">
             <div className="dialogue-speaker">{beat.speaker}</div>
             <div className="dialogue-line">{beat.lines[lineIndex]}</div>
@@ -200,7 +206,7 @@ export default function StoryPlayer() {
       const npc = state.npcs[beat.npcId];
       body = (
         <div className="tap-area" onClick={() => goto(beat.next)}>
-          <PortraitFrame name={npc.name} />
+          <PortraitFrame name={npc.name} npcId={npc.id} />
           <div className="pixel-panel">
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 16 }}>
               {npc.name} ({npc.age}) 등장
