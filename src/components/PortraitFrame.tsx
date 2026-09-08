@@ -1,7 +1,11 @@
 import CharacterPortrait, { hasPortrait } from './CharacterPortrait';
+import ImageWithFallback from './ImageWithFallback';
 
-// npcId가 있고 스프라이트가 준비된 캐릭터면 픽셀 초상화를, 아니면 이니셜 실루엣을 보여준다.
-// 나중에 진짜 아트가 들어오면 CharacterPortrait 내부만 교체하면 된다.
+// npcId가 있고 스프라이트가 준비된 캐릭터면:
+//   1) public/portraits/<npcId>.png 가 있으면 그 실제 아트를 쓰고
+//   2) 없으면 픽셀 초상화로 자동 대체하고
+//   3) 그것도 없으면 이니셜 실루엣을 보여준다.
+// 즉 이미지 파일을 public/portraits/에 정해진 이름으로 넣기만 하면 된다.
 
 export default function PortraitFrame({
   name,
@@ -18,7 +22,15 @@ export default function PortraitFrame({
   const illustrated = npcId ? hasPortrait(npcId) : false;
   const frame = (
     <div className={`portrait-frame ${size === 'sm' ? 'portrait-frame--sm' : ''}`}>
-      {illustrated && npcId ? <CharacterPortrait npcId={npcId} /> : initial}
+      {illustrated && npcId ? (
+        <ImageWithFallback
+          src={`/portraits/${npcId}.png`}
+          alt={name}
+          fallback={<CharacterPortrait npcId={npcId} />}
+        />
+      ) : (
+        initial
+      )}
     </div>
   );
   if (inline) return frame;

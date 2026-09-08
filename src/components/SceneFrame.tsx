@@ -2,14 +2,14 @@ import type { ReactNode } from 'react';
 import { useGame } from '../state/gameContext';
 import StatusBar from './StatusBar';
 import StatPopup from './StatPopup';
-import PokerRoomBackground from './PokerRoomBackground';
+import RoomBackground from './RoomBackground';
 
 export default function SceneFrame({ children }: { children: ReactNode }) {
   const { state, dispatch } = useGame();
   return (
     <div className="app-frame">
       <div className="app-frame__bg">
-        <PokerRoomBackground />
+        <RoomBackground />
       </div>
       <div className="app-frame__scrim" />
       <StatusBar />
