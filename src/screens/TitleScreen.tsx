@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGame, resetSave, loadSave } from '../state/gameContext';
 import { playSfx } from '../audio/soundManager';
+import PokerRoomBackground from '../components/PokerRoomBackground';
 
 const OPEN_LINES = [
   '가진 돈은 별로 없었다.',
@@ -28,6 +29,10 @@ export default function TitleScreen() {
 
   return (
     <div className="app-frame" style={{ justifyContent: 'center' }}>
+      <div className="app-frame__bg">
+        <PokerRoomBackground />
+      </div>
+      <div className="app-frame__scrim" />
       <div className="scene-body" style={{ justifyContent: 'center', gap: 24 }} onClick={!showMenu ? advance : undefined}>
         {!showMenu && (
           <>
