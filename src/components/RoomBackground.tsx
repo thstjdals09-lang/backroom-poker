@@ -9,7 +9,7 @@ export default function RoomBackground({ bgKey = 'room' }: { bgKey?: string }) {
   return (
     <ImageWithFallback
       key={bgKey}
-      src={`/backgrounds/${bgKey}.png`}
+      src={`${import.meta.env.BASE_URL}backgrounds/${bgKey}.png`}
       alt=""
       fallback={<PokerRoomBackground />}
       imgStyle={{ objectPosition: 'center bottom' }}

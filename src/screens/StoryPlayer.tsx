@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useGame } from '../state/gameContext';
 import { day1Beats } from '../data/day1Script';
 import { day1Backgrounds } from '../data/day1Backgrounds';
+import { day1Portraits } from '../data/day1Portraits';
 import type { Effect } from '../types';
 import PortraitFrame from '../components/PortraitFrame';
 import SceneFrame from '../components/SceneFrame';
@@ -84,7 +85,9 @@ export default function StoryPlayer() {
           className="tap-area"
           onClick={() => (isLast ? goto(beat.next) : setLineIndex((i) => i + 1))}
         >
-          {npc && <PortraitFrame name={npc.name} npcId={npc.id} />}
+          {npc && (
+            <PortraitFrame name={npc.name} npcId={npc.id} imageKey={day1Portraits[beat.id]} />
+          )}
           <div className="dialogue-box">
             <div className="dialogue-speaker">{beat.speaker}</div>
             <div className="dialogue-line">{beat.lines[lineIndex]}</div>
