@@ -71,7 +71,7 @@ export default function DefenseScreen({
 
   if (phase === 'handIntro') {
     return (
-      <SceneFrame>
+      <SceneFrame bgKey="defense_start_pov">
         <div className="center">
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: 'var(--accent)' }}>
             DEFENSE — {hand.title}
@@ -104,7 +104,7 @@ export default function DefenseScreen({
 
   if (phase === 'step') {
     return (
-      <SceneFrame>
+      <SceneFrame bgKey="defense_start_pov">
         <div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 4 }}>
             <PokerCard card={hand.heroCards[0]} />
@@ -149,7 +149,7 @@ export default function DefenseScreen({
 
   if (phase === 'outcome' && outcome) {
     return (
-      <SceneFrame>
+      <SceneFrame bgKey="defense_start_pov">
         <div className="tap-area" onClick={afterOutcome}>
           <div className="dialogue-box">
             <div className="dialogue-speaker">결과</div>
@@ -164,7 +164,7 @@ export default function DefenseScreen({
   // complete
   const success = state.room.point >= requirement;
   return (
-    <SceneFrame>
+    <SceneFrame bgKey={success ? 'defense_win' : undefined}>
       <div className="center">
         <div
           className="pixel-panel"

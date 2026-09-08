@@ -11,13 +11,19 @@ function stars(n: number) {
   return '★'.repeat(full) + '☆'.repeat(5 - full);
 }
 
-export default function DayResultScreen({ onContinue }: { onContinue: () => void }) {
+export default function DayResultScreen({
+  onContinue,
+  bgKey,
+}: {
+  onContinue: () => void;
+  bgKey?: string;
+}) {
   const { state } = useGame();
   const { ledger, player, room, flags } = state;
   const creditGranted = flags.creditChoice === 'granted';
 
   return (
-    <SceneFrame>
+    <SceneFrame bgKey={bgKey}>
       <div>
         <div
           className="scene-label"

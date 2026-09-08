@@ -30,7 +30,7 @@ export default function TitleScreen() {
   return (
     <div className="app-frame" style={{ justifyContent: 'center' }}>
       <div className="app-frame__bg">
-        <RoomBackground />
+        <RoomBackground bgKey="intro_alley" />
       </div>
       <div className="app-frame__scrim" />
       <div className="scene-body" style={{ justifyContent: 'center', gap: 24 }} onClick={!showMenu ? advance : undefined}>

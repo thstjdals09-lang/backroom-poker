@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useGame } from '../state/gameContext';
 import { day1Beats } from '../data/day1Script';
+import { day1Backgrounds } from '../data/day1Backgrounds';
 import type { Effect } from '../types';
 import PortraitFrame from '../components/PortraitFrame';
 import SceneFrame from '../components/SceneFrame';
@@ -293,11 +294,11 @@ export default function StoryPlayer() {
       );
     }
     case 'dayResult': {
-      return <DayResultScreen onContinue={() => goto(beat.next)} />;
+      return <DayResultScreen bgKey={day1Backgrounds[beat.id]} onContinue={() => goto(beat.next)} />;
     }
     case 'end':
       return null;
   }
 
-  return <SceneFrame>{body}</SceneFrame>;
+  return <SceneFrame bgKey={day1Backgrounds[beat.id]}>{body}</SceneFrame>;
 }

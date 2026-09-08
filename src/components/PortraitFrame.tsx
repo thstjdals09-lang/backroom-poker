@@ -24,6 +24,7 @@ export default function PortraitFrame({
     <div className={`portrait-frame ${size === 'sm' ? 'portrait-frame--sm' : ''}`}>
       {illustrated && npcId ? (
         <ImageWithFallback
+          key={npcId}
           src={`/portraits/${npcId}.png`}
           alt={name}
           fallback={<CharacterPortrait npcId={npcId} />}
