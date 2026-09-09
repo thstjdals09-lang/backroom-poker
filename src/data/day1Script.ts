@@ -285,6 +285,8 @@ const beats: Beat[] = [
           { target: 'npcAffinity', npcId: 'yongchul', delta: 8, label: '용철 친밀도' },
           { target: 'flag', key: 'creditChoice', value: 'granted' },
           { target: 'mental', delta: -6 },
+          { target: 'trait', key: 'leniency', delta: 2 },
+          { target: 'trait', key: 'regularVsRule', delta: 1 },
         ],
         next: 'event_after1',
       },
@@ -296,6 +298,9 @@ const beats: Beat[] = [
           { target: 'flag', key: 'creditChoice', value: 'refused' },
           { target: 'flag', key: 'tableBroken', value: true },
           { target: 'mental', delta: -13 },
+          { target: 'trait', key: 'leniency', delta: -1 },
+          { target: 'trait', key: 'regularVsRule', delta: -1 },
+          { target: 'trait', key: 'systemVsChaos', delta: -1 },
         ],
         next: 'event_after2',
       },
@@ -308,6 +313,8 @@ const beats: Beat[] = [
           { target: 'flag', key: 'creditChoice', value: 'kicked' },
           { target: 'flag', key: 'tableBroken', value: true },
           { target: 'mental', delta: -27 },
+          { target: 'trait', key: 'leniency', delta: -3 },
+          { target: 'trait', key: 'regularVsRule', delta: -2 },
         ],
         next: 'event_after3',
       },
@@ -403,7 +410,77 @@ const beats: Beat[] = [
     effects: [{ target: 'ledger', key: 'opEx', delta: -8400, label: '전기 / 음료' }],
     next: 'day_result',
   },
-  { id: 'day_result', type: 'dayResult', next: 'baksa_msg1' },
+  { id: 'day_result', type: 'dayResult', next: 'day1_invest_intro' },
+
+  // ---------------- 7. 첫날 번 돈으로 무엇을 할 것인가 ----------------
+  {
+    id: 'day1_invest_intro',
+    type: 'narration',
+    lines: ['오늘 번 돈을 어디에 쓸지 생각한다.'],
+    next: 'day1_invest_choice',
+  },
+  {
+    id: 'day1_invest_choice',
+    type: 'choice',
+    prompt: '오늘 순수익으로 뭘 할까.',
+    options: [
+      {
+        label: '에어컨을 수리한다.',
+        effects: [
+          { target: 'roomCash', delta: -60000, label: '에어컨 수리비' },
+          { target: 'npcAffinity', npcId: 'taesik', delta: 5, label: '태식 친밀도' },
+          { target: 'flag', key: 'airconFixed', value: true },
+          { target: 'flag', key: 'day1Investment', value: 'aircon' },
+          { target: 'trait', key: 'systemVsChaos', delta: -1 },
+        ],
+        next: 'day1_invest_aircon',
+      },
+      {
+        label: '운영자금으로 남긴다.',
+        effects: [
+          { target: 'flag', key: 'day1Investment', value: 'reserve' },
+          { target: 'trait', key: 'systemVsChaos', delta: -1 },
+        ],
+        next: 'day1_invest_reserve',
+      },
+      {
+        label: '테이블과 의자를 손본다.',
+        effects: [
+          { target: 'roomCash', delta: -45000, label: '테이블/의자 수리비' },
+          { target: 'roomReputation', delta: 1 },
+          { target: 'flag', key: 'furnitureFixed', value: true },
+          { target: 'flag', key: 'day1Investment', value: 'furniture' },
+          { target: 'trait', key: 'leniency', delta: 1 },
+        ],
+        next: 'day1_invest_furniture',
+      },
+    ],
+  },
+  {
+    id: 'day1_invest_aircon',
+    type: 'narration',
+    lines: ['낡은 에어컨을 손봤다.', '내일은 좀 나을지도 모른다.'],
+    next: 'day1_invest_done',
+  },
+  {
+    id: 'day1_invest_reserve',
+    type: 'narration',
+    lines: ['당장은 아무것도 손대지 않기로 했다.', '돈은 그대로 운영 자금으로 남겨뒀다.'],
+    next: 'day1_invest_done',
+  },
+  {
+    id: 'day1_invest_furniture',
+    type: 'narration',
+    lines: ['흔들리던 의자와 테이블 다리를 고쳤다.', '작은 차이지만, 티가 날 것이다.'],
+    next: 'day1_invest_done',
+  },
+  {
+    id: 'day1_invest_done',
+    type: 'narration',
+    lines: ['오늘 번 돈은 그렇게 쓰였다.'],
+    next: 'baksa_msg1',
+  },
+
   { id: 'baksa_msg1', type: 'dialogue', speaker: '박사장 (문자)', lines: ['야', '거기 잘 되냐'], next: 'baksa_msg2' },
   { id: 'baksa_msg2', type: 'dialogue', speaker: '주인공', lines: ['……'], next: 'baksa_choice' },
   {

@@ -112,6 +112,15 @@ export const day1Backgrounds: Record<string, string> = {
   night_end3: 'dawn_alone',
   night_opex: 'dawn_alone',
   day_result: 'dawn_alone',
+
+  // 첫날 번 돈으로 무엇을 할 것인가
+  day1_invest_intro: 'dawn_alone',
+  day1_invest_choice: 'dawn_alone',
+  day1_invest_aircon: 'dawn_alone',
+  day1_invest_reserve: 'dawn_alone',
+  day1_invest_furniture: 'dawn_alone',
+  day1_invest_done: 'dawn_alone',
+
   baksa_msg1: 'dawn_alone',
   baksa_msg2: 'dawn_alone',
   baksa_choice: 'dawn_alone',

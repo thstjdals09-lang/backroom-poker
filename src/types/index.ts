@@ -56,13 +56,14 @@ export type EffectTarget =
   | 'roomReputation'
   | 'npcAffinity'
   | 'flag'
-  | 'ledger';
+  | 'ledger'
+  | 'trait';
 
 export interface Effect {
   target: EffectTarget;
-  delta?: number; // mental / personalMoney / roomPoint / roomCash / roomReputation / npcAffinity 에 사용
+  delta?: number; // mental / personalMoney / roomPoint / roomCash / roomReputation / npcAffinity / trait 에 사용
   npcId?: string; // target === 'npcAffinity' 일 때 필수
-  key?: string; // target === 'flag' | 'ledger' 일 때 필수 (flag 이름 / ledger 항목명)
+  key?: string; // target === 'flag' | 'ledger' | 'trait' 일 때 필수 (flag 이름 / ledger 항목명 / trait 축 이름)
   value?: string | number | boolean; // target === 'flag' 일 때 사용 (미지정시 true)
   label?: string; // 팝업에 표시할 커스텀 라벨 (없으면 자동 생성)
 }

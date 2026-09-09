@@ -3,6 +3,9 @@ import { useGame } from '../state/gameContext';
 import { day1Beats } from '../data/day1Script';
 import { day1Backgrounds } from '../data/day1Backgrounds';
 import { day1Portraits } from '../data/day1Portraits';
+import { day2Beats } from '../data/day2Script';
+import { day2Backgrounds } from '../data/day2Backgrounds';
+import { day2Portraits } from '../data/day2Portraits';
 import type { Effect } from '../types';
 import PortraitFrame from '../components/PortraitFrame';
 import SceneFrame from '../components/SceneFrame';
@@ -15,9 +18,20 @@ function stars(n: number) {
   return '★'.repeat(full) + '☆'.repeat(5 - full);
 }
 
+// 현재 day에 맞는 스크립트 세트를 고른다. Day3 이후를 추가할 땐
+// 이 표에 한 줄만 더하면 된다.
+const DAY_SCRIPTS: Record<number, { beats: typeof day1Beats; backgrounds: typeof day1Backgrounds; portraits: typeof day1Portraits }> = {
+  1: { beats: day1Beats, backgrounds: day1Backgrounds, portraits: day1Portraits },
+  2: { beats: day2Beats, backgrounds: day2Backgrounds, portraits: day2Portraits },
+};
+
 export default function StoryPlayer() {
   const { state, dispatch } = useGame();
-  const beat = day1Beats[state.currentBeatId];
+  const script = DAY_SCRIPTS[state.day] ?? DAY_SCRIPTS[1];
+  const activeBeats = script.beats;
+  const activeBackgrounds = script.backgrounds;
+  const activePortraits = script.portraits;
+  const beat = activeBeats[state.currentBeatId];
   const [lineIndex, setLineIndex] = useState(0);
 
   useEffect(() => {
@@ -86,7 +100,7 @@ export default function StoryPlayer() {
           onClick={() => (isLast ? goto(beat.next) : setLineIndex((i) => i + 1))}
         >
           {npc && (
-            <PortraitFrame name={npc.name} npcId={npc.id} imageKey={day1Portraits[beat.id]} />
+            <PortraitFrame name={npc.name} npcId={npc.id} imageKey={activePortraits[beat.id]} />
           )}
           <div className="dialogue-box">
             <div className="dialogue-speaker">{beat.speaker}</div>
@@ -297,11 +311,11 @@ export default function StoryPlayer() {
       );
     }
     case 'dayResult': {
-      return <DayResultScreen bgKey={day1Backgrounds[beat.id]} onContinue={() => goto(beat.next)} />;
+      return <DayResultScreen bgKey={activeBackgrounds[beat.id]} onContinue={() => goto(beat.next)} />;
     }
     case 'end':
       return null;
   }
 
-  return <SceneFrame bgKey={day1Backgrounds[beat.id]}>{body}</SceneFrame>;
+  return <SceneFrame bgKey={activeBackgrounds[beat.id]}>{body}</SceneFrame>;
 }

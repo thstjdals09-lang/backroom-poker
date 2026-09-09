@@ -4,6 +4,7 @@ import SceneFrame from '../components/SceneFrame';
 import PortraitFrame from '../components/PortraitFrame';
 import PixelIcon from '../components/PixelIcon';
 import { roomUpgrades, shopItems } from '../data/homeMenu';
+import { getDay2StartBeatId } from '../data/day2Script';
 
 type TabId = 'room' | 'players' | 'poker' | 'shop';
 
@@ -132,7 +133,7 @@ function PlayersTab() {
 
 function PokerTab() {
   const { state } = useGame();
-  const { player, ledger } = state;
+  const { player, ledger, day } = state;
   return (
     <div>
       <div className="pixel-panel">
@@ -152,7 +153,7 @@ function PokerTab() {
 
       <div className="pixel-panel pixel-panel--alt mt">
         <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, marginBottom: 6 }}>
-          DAY 1 방어전 기록
+          DAY {day} 방어전 기록
         </div>
         <div className="popup-row">
           <span>포커 수익</span>
@@ -210,19 +211,38 @@ function ShopTab() {
 }
 
 export default function HomeScreen() {
-  const { dispatch } = useGame();
+  const { state, dispatch } = useGame();
   const [tab, setTab] = useState<TabId>('room');
 
   return (
     <SceneFrame>
       <div>
         <div className="scene-label" style={{ fontSize: 20, padding: '4px 0 4px' }}>
-          DAY 1 COMPLETE
+          DAY {state.day} COMPLETE
         </div>
         <div className="narration-text" style={{ fontSize: 12.5, marginBottom: 16 }}>
           박사장은 아직 연락이 없다.
           {'\n'}내일도 문은 열어야 한다.
         </div>
+
+        {state.day === 1 ? (
+          <button
+            className="primary-btn"
+            style={{ marginTop: 0, marginBottom: 16 }}
+            onClick={() => {
+              const beatId = getDay2StartBeatId(Boolean(state.flags.airconFixed));
+              dispatch({ type: 'START_DAY', day: 2, beatId });
+            }}
+          >
+            DAY 2 시작
+          </button>
+        ) : (
+          <div className="tutorial-tip" style={{ marginBottom: 16 }}>
+            <div className="tutorial-tip__text" style={{ textAlign: 'center' }}>
+              다음 Day는 아직 준비 중입니다.
+            </div>
+          </div>
+        )}
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
           {TABS.map((t) => (

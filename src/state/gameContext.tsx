@@ -16,6 +16,9 @@ export interface GameState {
   npcs: Record<string, NPCData>;
   flags: Flags;
   ledger: DayLedger;
+  // 플레이어의 운영 선택이 누적되는 성향 축(예: regularVsRule, leniency).
+  // 지금은 UI에 노출하지 않고 이후 storylet 분기용으로만 쌓아둔다.
+  traits: Record<string, number>;
   pendingChanges: StatChangeEntry[]; // 화면에 보여줄 "전 → 후" 팝업 큐
 }
 
@@ -42,6 +45,7 @@ function makeInitialState(): GameState {
     npcs: Object.fromEntries(initialNPCs.map((n) => [n.id, { ...n }])),
     flags: {},
     ledger: { roomRevenue: 0, pokerRevenue: 0, creditLoss: 0, opEx: 0 },
+    traits: {},
     pendingChanges: [],
   };
 }
@@ -55,7 +59,8 @@ type Action =
   | { type: 'NPC_ENTER'; npcId: string }
   | { type: 'NPC_DISCOVER'; npcId: string; note: string }
   | { type: 'GO_HOME' }
-  | { type: 'RESET_GAME' };
+  | { type: 'RESET_GAME' }
+  | { type: 'START_DAY'; day: number; beatId: string };
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
@@ -78,6 +83,8 @@ function labelFor(effect: Effect, npcs: Record<string, NPCData>): string {
       return `${npcs[effect.npcId ?? '']?.name ?? '???'} 친밀도`;
     case 'ledger':
       return effect.key ?? '기록';
+    case 'trait':
+      return effect.key ?? '성향';
     default:
       return '';
   }
@@ -92,6 +99,7 @@ export function applyEffects(
   let npcs = state.npcs;
   let flags = state.flags;
   let ledger = state.ledger;
+  let traits = state.traits;
   const changes: StatChangeEntry[] = [];
 
   for (const effect of effects) {
@@ -157,10 +165,19 @@ export function applyEffects(
         }
         break;
       }
+      case 'trait': {
+        // 내부 성향 축. 팝업으로 보여주지 않고 조용히 누적만 한다.
+        if (effect.key) {
+          const before = traits[effect.key] ?? 0;
+          const after = before + (effect.delta ?? 0);
+          traits = { ...traits, [effect.key]: after };
+        }
+        break;
+      }
     }
   }
 
-  return { state: { ...state, player, room, npcs, flags, ledger }, changes };
+  return { state: { ...state, player, room, npcs, flags, ledger, traits }, changes };
 }
 
 function reducer(state: GameState, action: Action): GameState {
@@ -196,6 +213,17 @@ function reducer(state: GameState, action: Action): GameState {
       return { ...state, phase: 'home' };
     case 'RESET_GAME':
       return makeInitialState();
+    case 'START_DAY':
+      // 하루가 넘어갈 때 그날의 장부만 새로 열고(누적 자금/호감도/성향은
+      // 그대로 이어짐) 지정된 beat부터 이어서 진행한다.
+      return {
+        ...state,
+        day: action.day,
+        phase: 'playing',
+        currentBeatId: action.beatId,
+        ledger: { roomRevenue: 0, pokerRevenue: 0, creditLoss: 0, opEx: 0 },
+        pendingChanges: [],
+      };
     default:
       return state;
   }
@@ -235,6 +263,8 @@ export function loadSave(): GameState | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as GameState;
     if (!parsed.player || !parsed.room) return null;
+    // traits 필드가 없던 이전 세이브도 안전하게 이어할 수 있도록 보정.
+    if (!parsed.traits) parsed.traits = {};
     return parsed;
   } catch {
     return null;
