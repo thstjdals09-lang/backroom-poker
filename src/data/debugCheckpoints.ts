@@ -96,4 +96,32 @@ export const debugCheckpoints: DebugCheckpoint[] = [
     beatId: 'd3_choice',
     flags: { day2Side: 'taesik', creditChoice: 'granted' },
   },
+  {
+    id: 'd3j_start_granted',
+    label: 'Day3 · 재훈데이 시작 (미수 허용)',
+    day: 3,
+    beatId: 'd3j_label',
+    flags: { day2Side: 'jaehoon', creditChoice: 'granted' },
+  },
+  {
+    id: 'd3j_start_refused',
+    label: 'Day3 · 재훈데이 시작 (미수 거절)',
+    day: 3,
+    beatId: 'd3j_label',
+    flags: { day2Side: 'jaehoon', creditChoice: 'refused' },
+  },
+  {
+    id: 'd3j_start_kicked',
+    label: 'Day3 · 재훈데이 시작 (용철 축출)',
+    day: 3,
+    beatId: 'd3j_label',
+    flags: { day2Side: 'jaehoon', creditChoice: 'kicked' },
+  },
+  {
+    id: 'd3j_choice',
+    label: 'Day3 · 재훈데이 핸드 복기 선택',
+    day: 3,
+    beatId: 'd3j_choice',
+    flags: { day2Side: 'jaehoon', creditChoice: 'granted' },
+  },
 ];

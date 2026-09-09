@@ -259,8 +259,361 @@ const beats: Beat[] = [
 
   { id: 'd3_end_1', type: 'narration', lines: ['그날 밤도 그렇게 지나갔다.'], next: 'day3_complete' },
   { id: 'day3_complete', type: 'end' },
+
+  // ============================================================
+  // Day 3 — 「재훈데이」
+  // Day2에서 재훈 편(flags.day2Side === 'jaehoon')을 든 경우 진입한다.
+  // 태식데이와 분위기가 확실히 다르게: 조용한 영업, 한 핸드에 대한
+  // 고민, 영업 후 둘만 남아 포커 얘기를 하는 하루.
+  // ============================================================
+
+  // ---------------- 1. Day3 시작 — 태식이 안 온다 ----------------
+  { id: 'd3j_label', type: 'sceneLabel', label: 'DAY 3', next: 'd3j_open_1' },
+  { id: 'd3j_open_1', type: 'dialogue', speaker: '주인공', lines: ['태식이 형 오늘 안 오네.'], next: 'd3j_open_2' },
+  { id: 'd3j_open_2', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['좋네요.'], next: 'd3j_open_3' },
+  { id: 'd3j_open_3', type: 'dialogue', speaker: '주인공', lines: ['뭐가요?'], next: 'd3j_open_4' },
+  { id: 'd3j_open_4', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['조용해서.'], next: 'd3j_open_5' },
+  {
+    id: 'd3j_open_5',
+    type: 'narration',
+    lines: ['잠깐, 실제로 조용한 방의 분위기가 이어진다.'],
+    next: 'd3j_open_6',
+  },
+  { id: 'd3j_open_6', type: 'narration', lines: ['그때 용철이 들어온다.'], next: 'd3j_open_7' },
+  {
+    id: 'd3j_open_7',
+    type: 'dialogue',
+    speaker: '용철',
+    portrait: 'yongchul',
+    lines: ['뭐야. 오늘 왜 이렇게 장례식장이야.'],
+    next: 'd3j_yongchul_branch',
+  },
+
+  // ---------------- 2. 용철 입장 (Day1 미수 선택에 따라 분기) ----------------
+  {
+    id: 'd3j_yongchul_branch',
+    type: 'branch',
+    flagKey: 'creditChoice',
+    cases: {
+      granted: 'd3j_yc_granted_1',
+      refused: 'd3j_yc_refused_1',
+      kicked: 'd3j_yc_kicked_1',
+    },
+    fallback: 'd3j_yc_refused_1',
+  },
+
+  // [Day1 미수 허용]
+  { id: 'd3j_yc_granted_1', type: 'dialogue', speaker: '용철', portrait: 'yongchul', lines: ['사장아.'], next: 'd3j_yc_granted_2' },
+  { id: 'd3j_yc_granted_2', type: 'dialogue', speaker: '주인공', lines: ['네.'], next: 'd3j_yc_granted_3' },
+  { id: 'd3j_yc_granted_3', type: 'dialogue', speaker: '용철', portrait: 'yongchul', lines: ['…이거부터.'], next: 'd3j_yc_granted_4' },
+  { id: 'd3j_yc_granted_4', type: 'narration', lines: ['용철이 지난 미수금을 먼저 갚는다.'], next: 'd3j_yc_granted_5' },
+  {
+    id: 'd3j_yc_granted_5',
+    type: 'dialogue',
+    speaker: '용철',
+    portrait: 'yongchul',
+    lines: ['오늘은 현금 있어.'],
+    next: 'd3j_game_1',
+  },
+
+  // [Day1 미수 거절]
+  { id: 'd3j_yc_refused_1', type: 'narration', lines: ['용철이 현금을 보여주며 들어온다.'], next: 'd3j_yc_refused_2' },
+  { id: 'd3j_yc_refused_2', type: 'dialogue', speaker: '용철', portrait: 'yongchul', lines: ['아이고~'], next: 'd3j_yc_refused_3' },
+  {
+    id: 'd3j_yc_refused_3',
+    type: 'dialogue',
+    speaker: '용철',
+    portrait: 'yongchul',
+    lines: ['여기 「돈 없으면 못 앉는 방」이라길래.'],
+    next: 'd3j_yc_refused_4',
+  },
+  {
+    id: 'd3j_yc_refused_4',
+    type: 'dialogue',
+    speaker: '용철',
+    portrait: 'yongchul',
+    lines: ['오늘은 자격 갖춰서 왔습니다, 사장님.'],
+    next: 'd3j_game_1',
+  },
+
+  // [Day1 용철을 내쫓음] — 태식이 없으니 주인공이 직접 대응한다
+  { id: 'd3j_yc_kicked_1', type: 'narration', lines: ['용철이 문 앞에서 잠깐 멈춘다.'], next: 'd3j_yc_kicked_2' },
+  {
+    id: 'd3j_yc_kicked_2',
+    type: 'dialogue',
+    speaker: '용철',
+    portrait: 'yongchul',
+    lines: ['오늘은 들어가도 됩니까, 사장님?'],
+    next: 'd3j_yc_kicked_3',
+  },
+  { id: 'd3j_yc_kicked_3', type: 'dialogue', speaker: '주인공', lines: ['……'], next: 'd3j_yc_kicked_4' },
+  { id: 'd3j_yc_kicked_4', type: 'dialogue', speaker: '주인공', lines: ['들어오세요.'], next: 'd3j_yc_kicked_5' },
+  { id: 'd3j_yc_kicked_5', type: 'narration', lines: ['용철이 들어온다.'], next: 'd3j_game_1' },
+
+  // ---------------- 3. 오늘의 게임 — 재훈이 용철에게 큰 팟을 잃는다 ----------------
+  { id: 'd3j_game_1', type: 'narration', lines: ['오늘 게임은 재훈, 용철, 기존 핸디들로 돌아간다.'], next: 'd3j_game_2' },
+  { id: 'd3j_game_2', type: 'narration', lines: ['태식이 없어서 평소보다 확실히 조용하다.'], next: 'd3j_game_3' },
+  { id: 'd3j_game_3', type: 'narration', lines: ['게임 중 재훈과 용철 사이에 큰 팟 하나가 생긴다.'], next: 'd3j_game_4' },
+  {
+    id: 'd3j_game_4',
+    type: 'narration',
+    lines: ['재훈이 탑페어 계열 핸드로 리버까지 갔다.\n용철이 리버에 팟 정도의 큰 배팅을 건다.'],
+    next: 'd3j_game_5',
+  },
+  { id: 'd3j_game_5', type: 'narration', lines: ['재훈이 오래 고민하다 콜한다.'], next: 'd3j_game_6' },
+  {
+    id: 'd3j_game_6',
+    type: 'narration',
+    lines: ['용철이 밸류 핸드를 보여준다.', '재훈이 큰 팟을 잃었다.'],
+    next: 'd3j_game_7',
+  },
+  { id: 'd3j_game_7', type: 'dialogue', speaker: '용철', portrait: 'yongchul', lines: ['아이고 재훈아~'], next: 'd3j_game_8' },
+  { id: 'd3j_game_8', type: 'dialogue', speaker: '용철', portrait: 'yongchul', lines: ['그걸 뭘 받아주냐.'], next: 'd3j_game_9' },
+  { id: 'd3j_game_9', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['……'], next: 'd3j_game_10' },
+  {
+    id: 'd3j_game_10',
+    type: 'narration',
+    lines: ['재훈은 화를 내거나 짜증내지 않는다.\n오히려 평소보다 더 말이 없어지고, 조용히 다음 게임을 한다.'],
+    next: 'd3j_game_11',
+  },
+  {
+    id: 'd3j_game_11',
+    type: 'narration',
+    lines: ['주인공은 재훈이 이 핸드를 계속 신경 쓰고 있다는 정도만 눈치챈다.'],
+    next: 'd3j_close_1',
+  },
+
+  // ---------------- 4. 영업 종료 — 재훈만 남는다 ----------------
+  { id: 'd3j_close_1', type: 'narration', lines: ['시간이 지나 영업이 끝난다.'], next: 'd3j_close_2' },
+  { id: 'd3j_close_2', type: 'narration', lines: ['용철과 다른 핸디들이 모두 나간다.'], next: 'd3j_close_3' },
+  {
+    id: 'd3j_close_3',
+    type: 'narration',
+    lines: ['그런데 재훈만 아직 남아 있다.\n휴대폰을 보고 있다.'],
+    next: 'd3j_close_4',
+  },
+  { id: 'd3j_close_4', type: 'dialogue', speaker: '주인공', lines: ['안 가요?'], next: 'd3j_close_5' },
+  { id: 'd3j_close_5', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['좀 있다가요.'], next: 'd3j_close_6' },
+  { id: 'd3j_close_6', type: 'dialogue', speaker: '주인공', lines: ['뭐 봐요?'], next: 'd3j_close_7' },
+  { id: 'd3j_close_7', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['아까 그거.'], next: 'd3j_close_8' },
+  { id: 'd3j_close_8', type: 'dialogue', speaker: '주인공', lines: ['아직도 생각해요?'], next: 'd3j_close_9' },
+  {
+    id: 'd3j_close_9',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['제가 왜 콜했는지 모르겠어서.'],
+    next: 'd3j_close_10',
+  },
+  {
+    id: 'd3j_close_10',
+    type: 'narration',
+    lines: ['결과 때문에 화가 난 것보다,\n자기가 왜 그런 판단을 했는지 계속 복기하는 모습이다.'],
+    next: 'd3j_close_11',
+  },
+  { id: 'd3j_close_11', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['사장님.'], next: 'd3j_close_12' },
+  { id: 'd3j_close_12', type: 'dialogue', speaker: '주인공', lines: ['왜요?'], next: 'd3j_close_13' },
+  {
+    id: 'd3j_close_13',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['아까 용철 아저씨랑 한 판 기억나요?'],
+    next: 'd3j_close_14',
+  },
+  { id: 'd3j_close_14', type: 'dialogue', speaker: '주인공', lines: ['어떤 거요?'], next: 'd3j_close_15' },
+  {
+    id: 'd3j_close_15',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['제가 탑페어였는데 리버에 용철 아저씨가 팟만큼 친 거요.'],
+    next: 'd3j_close_16',
+  },
+  { id: 'd3j_close_16', type: 'dialogue', speaker: '주인공', lines: ['아.'], next: 'd3j_close_17' },
+  {
+    id: 'd3j_close_17',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['형이면 그거 받아요?'],
+    next: 'd3j_choice',
+  },
+
+  // ---------------- 5. 플레이어 선택 ----------------
+  {
+    id: 'd3j_choice',
+    type: 'choice',
+    options: [
+      { label: '내 생각만 간단히 말해주자.', next: 'd3j_a1' },
+      {
+        label: '아까 액션부터 다시 생각해보자.',
+        effects: [
+          { target: 'npcAffinity', npcId: 'jaehoon', delta: 15, label: '재훈 친밀도' },
+          { target: 'flag', key: 'jaehoonBond1', value: true },
+        ],
+        next: 'd3j_b1',
+      },
+      { label: '뭔가 있어 보이는 말을 해보자.', next: 'd3j_c1' },
+    ],
+  },
+
+  // ---------------- 6A. 내 생각만 간단히 말해준다 ----------------
+  { id: 'd3j_a1', type: 'dialogue', speaker: '주인공', lines: ['나라면 폴드했을 것 같은데.'], next: 'd3j_a2' },
+  { id: 'd3j_a2', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['왜요?'], next: 'd3j_a3' },
+  {
+    id: 'd3j_a3',
+    type: 'dialogue',
+    speaker: '주인공',
+    lines: ['용철 아저씨가 거기서 팟만큼 치면 블러프가 그렇게 많아 보이진 않아서.'],
+    next: 'd3j_a4',
+  },
+  { id: 'd3j_a4', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['음…….'], next: 'd3j_a5' },
+  {
+    id: 'd3j_a5',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['저도 그래서 계속 걸려요.'],
+    next: 'd3j_wrap_branch',
+  },
+
+  // ---------------- 6B. 아까 액션부터 다시 생각해본다 ----------------
+  { id: 'd3j_b1', type: 'dialogue', speaker: '주인공', lines: ['잠깐.'], next: 'd3j_b2' },
+  { id: 'd3j_b2', type: 'dialogue', speaker: '주인공', lines: ['프리부터 다시 말해봐요.'], next: 'd3j_b3' },
+  { id: 'd3j_b3', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['프리부터요?'], next: 'd3j_b4' },
+  { id: 'd3j_b4', type: 'dialogue', speaker: '주인공', lines: ['응. 리버만 보면 모르잖아.'], next: 'd3j_b5' },
+  { id: 'd3j_b5', type: 'narration', lines: ['둘이 다시 테이블에 앉는다.'], next: 'd3j_b6' },
+  {
+    id: 'd3j_b6',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['용철 아저씨가 먼저 열었고 제가 콜했고…'],
+    next: 'd3j_b7',
+  },
+  {
+    id: 'd3j_b7',
+    type: 'narration',
+    lines: ['처음부터 액션을 다시 이야기하면서\n둘이 핸드를 진지하게 뜯어보기 시작한다.'],
+    next: 'd3j_b8',
+  },
+  {
+    id: 'd3j_b8',
+    type: 'dialogue',
+    speaker: '주인공',
+    lines: ['턴에서 네가 콜한 순간부터 생각해보면…'],
+    next: 'd3j_b9',
+  },
+  { id: 'd3j_b9', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['아.'], next: 'd3j_b10' },
+  { id: 'd3j_b10', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['저도 그게 좀 걸렸어요.'], next: 'd3j_b11' },
+  { id: 'd3j_b11', type: 'narration', lines: ['대화가 이어진다.'], next: 'd3j_b12' },
+  { id: 'd3j_b12', type: 'narration', lines: ['조금 뒤 재훈이 다른 핸드까지 꺼낸다.'], next: 'd3j_b13' },
+  { id: 'd3j_b13', type: 'dialogue', speaker: '주인공', lines: ['잠깐, 지금 하나만 본다며.'], next: 'd3j_b14' },
+  { id: 'd3j_b14', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['이것도 비슷해서요.'], next: 'd3j_b15' },
+  { id: 'd3j_b15', type: 'narration', lines: ['둘이 계속 핸드 이야기를 한다.'], next: 'd3j_b16' },
+  {
+    id: 'd3j_b16',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['형 생각보다 이런 거 진지하게 보네요.'],
+    next: 'd3j_b17',
+  },
+  { id: 'd3j_b17', type: 'dialogue', speaker: '주인공', lines: ['생각보다가 왜 붙어.'], next: 'd3j_b18' },
+  {
+    id: 'd3j_b18',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['맨날 감으로 치는 줄 알았는데.'],
+    next: 'd3j_b19',
+  },
+  { id: 'd3j_b19', type: 'dialogue', speaker: '주인공', lines: ['나 생각 많이 하고 쳐.'], next: 'd3j_b20' },
+  {
+    id: 'd3j_b20',
+    type: 'narration',
+    lines: ['이후에도 재훈이 핸드를 몇 개 더 꺼내면서\n둘이 생각보다 오래 이야기를 하게 된다.'],
+    next: 'd3j_b21',
+  },
+  { id: 'd3j_b21', type: 'narration', lines: ['시간이 꽤 흐른 뒤.'], next: 'd3j_b22' },
+  { id: 'd3j_b22', type: 'dialogue', speaker: '주인공', lines: ['몇 시예요?'], next: 'd3j_b23' },
+  { id: 'd3j_b23', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['여섯 시 반.'], next: 'd3j_b24' },
+  { id: 'd3j_b24', type: 'dialogue', speaker: '주인공', lines: ['미쳤네.'], next: 'd3j_b25' },
+  {
+    id: 'd3j_b25',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['그러게요.'],
+    next: 'd3j_wrap_branch',
+  },
+
+  // ---------------- 6C. 뭔가 있어 보이는 말을 해본다 (개그) ----------------
+  {
+    id: 'd3j_c1',
+    type: 'dialogue',
+    speaker: '주인공',
+    lines: ['근데 난 리버에서 이미 알았는데.'],
+    next: 'd3j_c2',
+  },
+  { id: 'd3j_c2', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['뭘요?'], next: 'd3j_c3' },
+  {
+    id: 'd3j_c3',
+    type: 'dialogue',
+    speaker: '주인공',
+    lines: ['용철 아저씨 금니 보였잖아.'],
+    next: 'd3j_c4',
+  },
+  { id: 'd3j_c4', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['……네?'], next: 'd3j_c5' },
+  { id: 'd3j_c5', type: 'dialogue', speaker: '주인공', lines: ['저 형 밸류 있을 때 금니 보여.'], next: 'd3j_c6' },
+  { id: 'd3j_c6', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['금니는 원래 보여요.'], next: 'd3j_c7' },
+  { id: 'd3j_c7', type: 'dialogue', speaker: '주인공', lines: ['아.'], next: 'd3j_c8' },
+  { id: 'd3j_c8', type: 'dialogue', speaker: '주인공', lines: ['그럼 목걸이였나.'], next: 'd3j_c9' },
+  { id: 'd3j_c9', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['그것도 원래 하고 다녀요.'], next: 'd3j_c10' },
+  { id: 'd3j_c10', type: 'dialogue', speaker: '주인공', lines: ['……'], next: 'd3j_c11' },
+  {
+    id: 'd3j_c11',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['포커 얘기 하기 싫으면 그냥 그렇다고 해요.'],
+    next: 'd3j_wrap_branch',
+  },
+
+  // ---------------- 7. B 선택 전용 마무리 ----------------
+  {
+    id: 'd3j_wrap_branch',
+    type: 'branch',
+    flagKey: 'jaehoonBond1',
+    cases: { true: 'd3j_farewell_1' },
+    fallback: 'd3j_end_1',
+  },
+  { id: 'd3j_farewell_1', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['사장님.'], next: 'd3j_farewell_2' },
+  { id: 'd3j_farewell_2', type: 'dialogue', speaker: '주인공', lines: ['왜요?'], next: 'd3j_farewell_3' },
+  {
+    id: 'd3j_farewell_3',
+    type: 'dialogue',
+    speaker: '재훈',
+    portrait: 'jaehoon',
+    lines: ['다음에 애매한 핸드 있으면 보내도 돼요?'],
+    next: 'd3j_farewell_4',
+  },
+  {
+    id: 'd3j_farewell_4',
+    type: 'dialogue',
+    speaker: '주인공',
+    lines: ['이미 보낼 생각이었잖아요.'],
+    next: 'd3j_farewell_5',
+  },
+  { id: 'd3j_farewell_5', type: 'dialogue', speaker: '재훈', portrait: 'jaehoon', lines: ['……네.'], next: 'd3j_farewell_6' },
+  { id: 'd3j_farewell_6', type: 'narration', lines: ['재훈이 나간다.'], next: 'd3j_end_1' },
+
+  { id: 'd3j_end_1', type: 'narration', lines: ['그날 밤도 그렇게 지나갔다.'], next: 'day3_jaehoon_complete' },
+  { id: 'day3_jaehoon_complete', type: 'end' },
 ];
 
 export const day3Beats: Record<string, Beat> = Object.fromEntries(beats.map((b) => [b.id, b]));
 
-export const DAY3_START_BEAT_ID = 'd3_label';
+export const DAY3_TAESIK_START_BEAT_ID = 'd3_label';
+export const DAY3_JAEHOON_START_BEAT_ID = 'd3j_label';
