@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react';
-import type { DayLedger, Effect, Flags, NPCData, PlayerState, RoomState, StatChangeEntry } from '../types';
+import type { DayLedger, Effect, Flags, NPCData, PlayerState, RoomState, RumorEntry, StatChangeEntry } from '../types';
 import { initialNPCs } from '../data/npcs';
 import { START_BEAT_ID } from '../data/day1Script';
 
@@ -19,9 +19,9 @@ export interface GameState {
   // 플레이어의 운영 선택이 누적되는 성향 축(예: regularVsRule, leniency).
   // 지금은 UI에 노출하지 않고 이후 storylet 분기용으로만 쌓아둔다.
   traits: Record<string, number>;
-  // 플레이어가 지금까지 획득한 소문 목록 (모아보기용). 못 얻은 소문은
-  // 존재 자체를 모르는 게 맞으므로 여기 없으면 그냥 없는 것으로 취급한다.
-  rumors: string[];
+  // 플레이어가 실제로 획득한 소문만 담기는 기록(도감이 아님). 못 얻은
+  // 소문은 존재 자체를 모르는 게 맞으므로 여기 없으면 그냥 없는 것이다.
+  rumors: RumorEntry[];
   pendingChanges: StatChangeEntry[]; // 화면에 보여줄 "전 → 후" 팝업 큐
 }
 
@@ -182,9 +182,17 @@ export function applyEffects(
       }
       case 'rumor': {
         // 소문 획득. "소문 획득 「...」" 문구는 스토리 beat 자체에서
-        // 보여주므로 여기선 목록에 조용히 추가만 한다(중복 방지).
-        if (typeof effect.value === 'string' && !rumors.includes(effect.value)) {
-          rumors = [...rumors, effect.value];
+        // 보여주므로 여기선 기록에 조용히 추가만 한다(중복 방지).
+        if (typeof effect.value === 'string' && !rumors.some((r) => r.name === effect.value)) {
+          rumors = [
+            ...rumors,
+            {
+              name: effect.value,
+              day: state.day,
+              npc: effect.rumor?.npc ?? '???',
+              memory: effect.rumor?.memory ?? '',
+            },
+          ];
         }
         break;
       }
@@ -299,7 +307,13 @@ export function loadSave(): GameState | null {
     if (!parsed.player || !parsed.room) return null;
     // traits/rumors 필드가 없던 이전 세이브도 안전하게 이어할 수 있도록 보정.
     if (!parsed.traits) parsed.traits = {};
-    if (!parsed.rumors) parsed.rumors = [];
+    if (!parsed.rumors) {
+      parsed.rumors = [];
+    } else if (typeof parsed.rumors[0] === 'string') {
+      // rumors가 string[]이던 예전 저장 형식 보정.
+      const oldRumors = parsed.rumors as unknown as string[];
+      parsed.rumors = oldRumors.map((name) => ({ name, day: parsed.day, npc: '???', memory: '' }));
+    }
     return parsed;
   } catch {
     return null;

@@ -116,7 +116,16 @@ const beats: Beat[] = [
   {
     id: 'd2_rumor_granted_gain',
     type: 'effects',
-    effects: [{ target: 'rumor', value: '미수 잘 되는 방' }],
+    effects: [
+      {
+        target: 'rumor',
+        value: '미수 잘 되는 방',
+        rumor: {
+          npc: '처음 본 손님',
+          memory: '용철 아저씨 한 번 봐줬더니,\n다음 날 처음 보는 사람이 찾아왔다.',
+        },
+      },
+    ],
     next: 'd2_rumor_granted_announce',
   },
   {
@@ -164,7 +173,14 @@ const beats: Beat[] = [
     type: 'effects',
     effects: [
       { target: 'mental', delta: -5 },
-      { target: 'rumor', value: '미수 잘 되는 방' },
+      {
+        target: 'rumor',
+        value: '미수 잘 되는 방',
+        rumor: {
+          npc: '처음 본 손님',
+          memory: '용철 아저씨 한 번 봐줬더니,\n다음 날 처음 보는 사람이 찾아왔다.',
+        },
+      },
     ],
     next: 'd2_rumor_granted_noaircon_announce',
   },
@@ -213,7 +229,16 @@ const beats: Beat[] = [
   {
     id: 'd2_rumor_refused_gain',
     type: 'effects',
-    effects: [{ target: 'rumor', value: '돈 없으면 못 앉는 방' }],
+    effects: [
+      {
+        target: 'rumor',
+        value: '돈 없으면 못 앉는 방',
+        rumor: {
+          npc: '재훈',
+          memory: '용철 아저씨 미수를 거절한 게\n벌써 밖에 퍼져 있었다.',
+        },
+      },
+    ],
     next: 'd2_rumor_refused_announce',
   },
   {
@@ -272,7 +297,16 @@ const beats: Beat[] = [
   {
     id: 'd2_rumor_kicked_gain',
     type: 'effects',
-    effects: [{ target: 'rumor', value: '사장 성질 있는 데' }],
+    effects: [
+      {
+        target: 'rumor',
+        value: '사장 성질 있는 데',
+        rumor: {
+          npc: '태식',
+          memory: '용철이 형을 내보낸 다음 날.\n태식은 장사 그러다 망한다고 했다.',
+        },
+      },
+    ],
     next: 'd2_rumor_kicked_announce',
   },
   {

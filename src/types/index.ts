@@ -44,6 +44,14 @@ export interface DayLedger {
 
 export type Flags = Record<string, string | number | boolean | undefined>;
 
+// 플레이어가 실제로 획득한 소문만 담기는 목록 (도감이 아니라 기록).
+export interface RumorEntry {
+  name: string;
+  day: number; // 획득한 날
+  npc: string; // 처음 말해준 사람
+  memory: string; // 주인공이 기억하는 문구
+}
+
 // ---------------- Effects ----------------
 // 대사/선택지/이벤트가 게임 상태에 주는 영향을 표현하는 단일 단위.
 // 새 효과 종류가 필요하면 target 유니온에 추가하면 된다.
@@ -66,6 +74,7 @@ export interface Effect {
   npcId?: string; // target === 'npcAffinity' 일 때 필수
   key?: string; // target === 'flag' | 'ledger' | 'trait' 일 때 필수 (flag 이름 / ledger 항목명 / trait 축 이름)
   value?: string | number | boolean; // target === 'flag' | 'rumor' 일 때 사용 (rumor는 소문 이름 문자열)
+  rumor?: { npc: string; memory: string }; // target === 'rumor' 일 때, 누가 말해줬는지 / 기억 문구
   label?: string; // 팝업에 표시할 커스텀 라벨 (없으면 자동 생성)
 }
 

@@ -3,16 +3,22 @@ import { useGame, resetSave } from '../state/gameContext';
 import SceneFrame from '../components/SceneFrame';
 import PortraitFrame from '../components/PortraitFrame';
 import PixelIcon from '../components/PixelIcon';
-import { roomUpgrades, shopItems } from '../data/homeMenu';
+import {
+  coffeeMachineLevels,
+  dealerItem,
+  day1LeftoverRepairs,
+  secondTableGoal,
+  type ManageFlagItem,
+} from '../data/homeMenu';
 import { getDay2StartBeatId } from '../data/day2Script';
 
-type TabId = 'room' | 'players' | 'poker' | 'shop';
+type TabId = 'room' | 'players' | 'poker' | 'manage';
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'room', label: 'ROOM' },
   { id: 'players', label: 'PLAYERS' },
   { id: 'poker', label: 'POKER' },
-  { id: 'shop', label: 'SHOP' },
+  { id: 'manage', label: 'MANAGE' },
 ];
 
 function stars(n: number) {
@@ -57,7 +63,7 @@ function LockedRow({
 
 function RoomTab() {
   const { state } = useGame();
-  const { room } = state;
+  const { room, rumors } = state;
   return (
     <div>
       <div className="pixel-panel">
@@ -81,11 +87,38 @@ function RoomTab() {
       </div>
 
       <div className="narration-text mt" style={{ fontSize: 12, textAlign: 'left' }}>
-        룸 업그레이드
+        소문
       </div>
-      {roomUpgrades.map((u) => (
-        <LockedRow key={u.id} icon={u.icon} name={u.name} desc={u.desc} tag="DAY 2+" />
-      ))}
+      {rumors.length === 0 ? (
+        <div className="pixel-panel pixel-panel--alt mt">
+          <div style={{ fontSize: 12.5, color: 'var(--text-dim)' }}>아직 이 방에 붙은 소문은 없다.</div>
+        </div>
+      ) : (
+        rumors.map((r) => (
+          <div key={r.name} className="pixel-panel pixel-panel--alt mt">
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: 'var(--accent)' }}>
+              「{r.name}」
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 2 }}>
+              DAY {r.day} · {r.npc}에게 들음
+            </div>
+            {r.memory && (
+              <div
+                style={{
+                  fontSize: 12,
+                  lineHeight: 1.6,
+                  marginTop: 8,
+                  whiteSpace: 'pre-line',
+                  fontStyle: 'italic',
+                  color: 'var(--text)',
+                }}
+              >
+                “{r.memory}”
+              </div>
+            )}
+          </div>
+        ))
+      )}
     </div>
   );
 }
@@ -169,43 +202,161 @@ function PokerTab() {
   );
 }
 
-function ShopTab() {
-  const { state } = useGame();
+// MANAGE 탭에서 실제 구매 가능한 행. purchasable=false면 상태 태그만 보여준다.
+function ManageRow({
+  icon,
+  name,
+  desc,
+  price,
+  purchasable,
+  disabledReason,
+  onBuy,
+}: {
+  icon: Parameters<typeof PixelIcon>[0]['name'];
+  name: string;
+  desc: string;
+  price: number;
+  purchasable: boolean;
+  disabledReason?: string;
+  onBuy: () => void;
+}) {
+  return (
+    <div className="pixel-panel pixel-panel--alt mt" style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+      <PixelIcon name={icon} size={30} />
+      <div style={{ flex: 1 }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 13.5 }}>{name}</div>
+        <div style={{ fontSize: 11.5, color: 'var(--text-dim)', marginTop: 2 }}>{desc}</div>
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 12 }}>₩{price.toLocaleString()}</div>
+        {purchasable ? (
+          <button className="ghost-btn" style={{ marginTop: 4, padding: '4px 10px', fontSize: 11 }} onClick={onBuy}>
+            구매
+          </button>
+        ) : (
+          <div
+            style={{
+              fontSize: 10,
+              color: 'var(--accent-dim)',
+              border: '1px solid var(--border)',
+              borderRadius: 3,
+              padding: '2px 5px',
+              marginTop: 4,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {disabledReason}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ManageTab() {
+  const { state, dispatch } = useGame();
+  const { room, flags, day } = state;
+  const unlocked = day >= 2; // Day2 종료 후부터 실제 구매 가능
+
+  function buy(item: ManageFlagItem) {
+    dispatch({
+      type: 'APPLY_EFFECTS',
+      effects: [
+        { target: 'roomCash', delta: -item.price, label: item.name },
+        { target: 'flag', key: item.flagKey, value: true },
+        ...(item.extraEffects ?? []),
+      ],
+    });
+  }
+
+  function buyCoffeeLevel(level: (typeof coffeeMachineLevels)[number]) {
+    dispatch({
+      type: 'APPLY_EFFECTS',
+      effects: [
+        { target: 'roomCash', delta: -level.price, label: level.name },
+        { target: 'flag', key: 'coffeeMachineLevel', value: level.level },
+      ],
+    });
+  }
+
+  const coffeeLevel = Number(flags.coffeeMachineLevel) || 0;
+  const nextCoffeeLevel = coffeeMachineLevels.find((l) => l.level > coffeeLevel);
+
+  function rowState(price: number) {
+    if (!unlocked) return { purchasable: false, reason: 'DAY 2 이후' };
+    if (room.cash < price) return { purchasable: false, reason: '현금 부족' };
+    return { purchasable: true, reason: undefined };
+  }
+
   return (
     <div>
-      {shopItems.map((item) => (
-        <div
-          key={item.id}
-          className="pixel-panel pixel-panel--alt mt"
-          style={{ display: 'flex', gap: 10, alignItems: 'center' }}
-        >
-          <PixelIcon name={item.icon} size={30} />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 13.5 }}>{item.name}</div>
-            <div style={{ fontSize: 11.5, color: 'var(--text-dim)', marginTop: 2 }}>{item.desc}</div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 12 }}>
-              ₩{item.price.toLocaleString()}
-            </div>
-            <div
-              style={{
-                fontSize: 10,
-                color: 'var(--accent-dim)',
-                border: '1px solid var(--border)',
-                borderRadius: 3,
-                padding: '2px 5px',
-                marginTop: 3,
-              }}
-            >
-              DAY 2+
-            </div>
+      {!unlocked && (
+        <div className="tutorial-tip">
+          <div className="tutorial-tip__text" style={{ textAlign: 'center' }}>
+            DAY 2가 끝나면 여기서 룸 시설을 실제로 투자할 수 있습니다.
           </div>
         </div>
-      ))}
-      <div className="narration-text mt" style={{ fontSize: 11.5 }}>
-        보유 현금 ₩{state.room.cash.toLocaleString()} — 아직은 구경만 할 수 있다.
-      </div>
+      )}
+
+      {nextCoffeeLevel &&
+        (() => {
+          const { purchasable, reason } = rowState(nextCoffeeLevel.price);
+          return (
+            <ManageRow
+              icon={nextCoffeeLevel.icon}
+              name={nextCoffeeLevel.name}
+              desc={nextCoffeeLevel.desc}
+              price={nextCoffeeLevel.price}
+              purchasable={purchasable}
+              disabledReason={reason}
+              onBuy={() => buyCoffeeLevel(nextCoffeeLevel)}
+            />
+          );
+        })()}
+
+      {!flags.dealerHired &&
+        (() => {
+          const { purchasable, reason } = rowState(dealerItem.price);
+          return (
+            <ManageRow
+              icon={dealerItem.icon}
+              name={dealerItem.name}
+              desc={dealerItem.desc}
+              price={dealerItem.price}
+              purchasable={purchasable}
+              disabledReason={reason}
+              onBuy={() => buy(dealerItem)}
+            />
+          );
+        })()}
+
+      {day1LeftoverRepairs
+        .filter((item) => !(item.hideWhenOwned && flags[item.flagKey]))
+        .map((item) => {
+          const { purchasable, reason } = rowState(item.price);
+          return (
+            <ManageRow
+              key={item.id}
+              icon={item.icon}
+              name={item.name}
+              desc={item.desc}
+              price={item.price}
+              purchasable={purchasable}
+              disabledReason={reason}
+              onBuy={() => buy(item)}
+            />
+          );
+        })}
+
+      <ManageRow
+        icon={secondTableGoal.icon}
+        name={`${secondTableGoal.name} 🔒`}
+        desc={secondTableGoal.desc}
+        price={secondTableGoal.price}
+        purchasable={false}
+        disabledReason="조건 미충족"
+        onBuy={() => {}}
+      />
     </div>
   );
 }
@@ -266,7 +417,7 @@ export default function HomeScreen() {
         {tab === 'room' && <RoomTab />}
         {tab === 'players' && <PlayersTab />}
         {tab === 'poker' && <PokerTab />}
-        {tab === 'shop' && <ShopTab />}
+        {tab === 'manage' && <ManageTab />}
 
         <button
           className="ghost-btn mt"
