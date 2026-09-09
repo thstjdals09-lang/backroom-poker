@@ -11,6 +11,7 @@ import {
   type ManageFlagItem,
 } from '../data/homeMenu';
 import { getDay2StartBeatId } from '../data/day2Script';
+import { DAY3_START_BEAT_ID } from '../data/day3Script';
 
 type TabId = 'room' | 'players' | 'poker' | 'manage';
 
@@ -376,7 +377,7 @@ export default function HomeScreen() {
           {'\n'}내일도 문은 열어야 한다.
         </div>
 
-        {state.day === 1 ? (
+        {state.day === 1 && (
           <button
             className="primary-btn"
             style={{ marginTop: 0, marginBottom: 16 }}
@@ -387,7 +388,19 @@ export default function HomeScreen() {
           >
             DAY 2 시작
           </button>
-        ) : (
+        )}
+
+        {state.day === 2 && state.flags.day2Side === 'taesik' && (
+          <button
+            className="primary-btn"
+            style={{ marginTop: 0, marginBottom: 16 }}
+            onClick={() => dispatch({ type: 'START_DAY', day: 3, beatId: DAY3_START_BEAT_ID })}
+          >
+            DAY 3 시작
+          </button>
+        )}
+
+        {(state.day >= 3 || (state.day === 2 && state.flags.day2Side !== 'taesik')) && (
           <div className="tutorial-tip" style={{ marginBottom: 16 }}>
             <div className="tutorial-tip__text" style={{ textAlign: 'center' }}>
               다음 Day는 아직 준비 중입니다.

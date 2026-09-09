@@ -68,4 +68,32 @@ export const debugCheckpoints: DebugCheckpoint[] = [
     beatId: 'd2_business_start',
     flags: { creditChoice: 'granted', airconFixed: true },
   },
+  {
+    id: 'd3_start_granted',
+    label: 'Day3 · 태식데이 시작 (미수 허용)',
+    day: 3,
+    beatId: 'd3_label',
+    flags: { day2Side: 'taesik', creditChoice: 'granted' },
+  },
+  {
+    id: 'd3_start_refused',
+    label: 'Day3 · 태식데이 시작 (미수 거절)',
+    day: 3,
+    beatId: 'd3_label',
+    flags: { day2Side: 'taesik', creditChoice: 'refused' },
+  },
+  {
+    id: 'd3_start_kicked',
+    label: 'Day3 · 태식데이 시작 (용철 축출)',
+    day: 3,
+    beatId: 'd3_label',
+    flags: { day2Side: 'taesik', creditChoice: 'kicked' },
+  },
+  {
+    id: 'd3_choice',
+    label: 'Day3 · 판돈 선택 순간',
+    day: 3,
+    beatId: 'd3_choice',
+    flags: { day2Side: 'taesik', creditChoice: 'granted' },
+  },
 ];

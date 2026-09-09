@@ -6,6 +6,9 @@ import { day1Portraits } from '../data/day1Portraits';
 import { day2Beats } from '../data/day2Script';
 import { day2Backgrounds } from '../data/day2Backgrounds';
 import { day2Portraits } from '../data/day2Portraits';
+import { day3Beats } from '../data/day3Script';
+import { day3Backgrounds } from '../data/day3Backgrounds';
+import { day3Portraits } from '../data/day3Portraits';
 import type { Effect } from '../types';
 import PortraitFrame from '../components/PortraitFrame';
 import SceneFrame from '../components/SceneFrame';
@@ -35,11 +38,12 @@ function renderRich(text: string | undefined) {
   );
 }
 
-// 현재 day에 맞는 스크립트 세트를 고른다. Day3 이후를 추가할 땐
+// 현재 day에 맞는 스크립트 세트를 고른다. Day4 이후를 추가할 땐
 // 이 표에 한 줄만 더하면 된다.
 const DAY_SCRIPTS: Record<number, { beats: typeof day1Beats; backgrounds: typeof day1Backgrounds; portraits: typeof day1Portraits }> = {
   1: { beats: day1Beats, backgrounds: day1Backgrounds, portraits: day1Portraits },
   2: { beats: day2Beats, backgrounds: day2Backgrounds, portraits: day2Portraits },
+  3: { beats: day3Beats, backgrounds: day3Backgrounds, portraits: day3Portraits },
 };
 
 export default function StoryPlayer() {
