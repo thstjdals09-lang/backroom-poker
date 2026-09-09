@@ -24,6 +24,17 @@ export const day2Backgrounds: Record<string, string> = {
   d2_rumor_granted_14: 'taesik_reaction',
   d2_rumor_granted_announce: 'room',
 
+  // 첫 소문 이벤트 — 1-b) 미수 허용 + 에어컨 안 고침 (태식이 안 막아줌)
+  d2_rumor_granted_noaircon_1: 'night_session_early',
+  d2_rumor_granted_noaircon_2: 'night_session_early',
+  d2_rumor_granted_noaircon_3: 'night_session_early',
+  d2_rumor_granted_noaircon_4: 'night_session_early',
+  d2_rumor_granted_noaircon_5: 'night_session_early',
+  d2_rumor_granted_noaircon_6: 'night_session_early',
+  d2_rumor_granted_noaircon_7: 'room',
+  d2_rumor_granted_noaircon_8: 'room',
+  d2_rumor_granted_noaircon_announce: 'room',
+
   // 첫 소문 이벤트 — 2) 미수를 거절했던 경우
   d2_rumor_refused_1: 'jaehoon_enter',
   d2_rumor_refused_2: 'jaehoon_enter',

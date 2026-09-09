@@ -34,14 +34,24 @@ const beats: Beat[] = [
     type: 'branch',
     flagKey: 'creditChoice',
     cases: {
-      granted: 'd2_rumor_granted_1',
+      granted: 'd2_rumor_granted_branch',
       refused: 'd2_rumor_refused_1',
       kicked: 'd2_rumor_kicked_1',
     },
     fallback: 'd2_business_start',
   },
 
-  // --- 1) 미수를 허용했던 경우: 「미수 잘 되는 방」 ---
+  // 미수를 허용했던 경우, Day1 투자 선택(에어컨 수리 여부)에 따라
+  // 태식이 손님을 막아주는지/플레이어가 직접 곤란을 겪는지가 갈린다.
+  {
+    id: 'd2_rumor_granted_branch',
+    type: 'branch',
+    flagKey: 'airconFixed',
+    cases: { true: 'd2_rumor_granted_1' },
+    fallback: 'd2_rumor_granted_noaircon_1',
+  },
+
+  // --- 1) 미수를 허용했던 경우 (+ 에어컨 수리함): 「미수 잘 되는 방」, 태식이 막아준다 ---
   { id: 'd2_rumor_granted_1', type: 'dialogue', speaker: '???', lines: ['"여기가 VARIANCE 맞죠?"'], next: 'd2_rumor_granted_2' },
   { id: 'd2_rumor_granted_2', type: 'dialogue', speaker: '주인공', lines: ['"네. 곧 첫 게임 스타트합니다."'], next: 'd2_rumor_granted_3' },
   {
@@ -111,6 +121,55 @@ const beats: Beat[] = [
   },
   {
     id: 'd2_rumor_granted_announce',
+    type: 'narration',
+    lines: ['소문 획득\n「미수 잘 되는 방」'],
+    next: 'd2_business_start',
+  },
+
+  // --- 1-b) 미수를 허용했던 경우 (+ 에어컨 안 고침): 태식이 안 막아주고 플레이어가 직접 곤란을 겪는다 ---
+  {
+    id: 'd2_rumor_granted_noaircon_1',
+    type: 'dialogue',
+    speaker: '???',
+    lines: ['"여기 「미수 잘 되는 방」이라면서요?"'],
+    next: 'd2_rumor_granted_noaircon_2',
+  },
+  {
+    id: 'd2_rumor_granted_noaircon_2',
+    type: 'dialogue',
+    speaker: '주인공',
+    lines: ['"그게… 아무한테나 되는 건 아니고요."'],
+    next: 'd2_rumor_granted_noaircon_3',
+  },
+  { id: 'd2_rumor_granted_noaircon_3', type: 'dialogue', speaker: '???', lines: ['"뭐예요 그럼."'], next: 'd2_rumor_granted_noaircon_4' },
+  {
+    id: 'd2_rumor_granted_noaircon_4',
+    type: 'dialogue',
+    speaker: '???',
+    lines: ['"누군 되고 누군 안 되고…"'],
+    next: 'd2_rumor_granted_noaircon_5',
+  },
+  {
+    id: 'd2_rumor_granted_noaircon_5',
+    type: 'dialogue',
+    speaker: '???',
+    lines: ['"씨, 장사를 뭐 이렇게 해."'],
+    next: 'd2_rumor_granted_noaircon_6',
+  },
+  { id: 'd2_rumor_granted_noaircon_6', type: 'dialogue', speaker: '???', lines: ['"됐어요."'], next: 'd2_rumor_granted_noaircon_7' },
+  { id: 'd2_rumor_granted_noaircon_7', type: 'narration', lines: ['손님이 나간다.'], next: 'd2_rumor_granted_noaircon_8' },
+  { id: 'd2_rumor_granted_noaircon_8', type: 'dialogue', speaker: '주인공', lines: ['……'], next: 'd2_rumor_granted_noaircon_penalty' },
+  {
+    id: 'd2_rumor_granted_noaircon_penalty',
+    type: 'effects',
+    effects: [
+      { target: 'mental', delta: -5 },
+      { target: 'rumor', value: '미수 잘 되는 방' },
+    ],
+    next: 'd2_rumor_granted_noaircon_announce',
+  },
+  {
+    id: 'd2_rumor_granted_noaircon_announce',
     type: 'narration',
     lines: ['소문 획득\n「미수 잘 되는 방」'],
     next: 'd2_business_start',
