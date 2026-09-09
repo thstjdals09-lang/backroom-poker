@@ -219,7 +219,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
   }, [state]);
 
-  const hasSave = useMemo(() => loadSave() !== null, [state.phase]);
+  // state 전체가 바뀔 때마다(= 매 dispatch마다) 다시 계산한다. RESET_GAME
+  // 직후에도 "이어하기" 버튼이 즉시 사라져야 하는데 phase만 의존성으로
+  // 두면 title -> title처럼 값이 안 바뀌어 갱신을 놓치는 경우가 있었다.
+  const hasSave = useMemo(() => loadSave() !== null, [state]);
 
   return (
     <GameContext.Provider value={{ state, dispatch, hasSave }}>{children}</GameContext.Provider>

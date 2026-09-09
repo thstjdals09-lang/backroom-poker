@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useGame, resetSave, loadSave } from '../state/gameContext';
 import { playSfx } from '../audio/soundManager';
 import RoomBackground from '../components/RoomBackground';
+import MenuButton from '../components/MenuButton';
 
 // Day 1 오프닝 — 타이틀 화면 다음, "영업 시작"을 누르기 전까지 보여주는
 // 도입 내레이션. 한 화면에 1~2문장만 담아 텍스트를 크게 보여준다.
@@ -66,8 +67,23 @@ export default function TitleScreen() {
     if (!isLastLine) setLineIndex((i) => i + 1);
   }
 
+  const base = import.meta.env.BASE_URL;
+
   return (
     <div className="app-frame" style={{ justifyContent: 'center' }}>
+      {phase === 'title' && (
+        <>
+          <div className="app-frame__bg">
+            <img
+              src={`${base}ui/title_background.png`}
+              alt=""
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+            />
+          </div>
+          <div className="title-scrim" />
+        </>
+      )}
+
       {phase === 'opening' && (
         <>
           <div className="app-frame__bg">
@@ -84,46 +100,42 @@ export default function TitleScreen() {
         onClick={phase === 'opening' && !isLastLine ? advance : undefined}
       >
         {phase === 'title' && (
-          <div style={{ textAlign: 'center' }}>
-            <h1 className="title-hero fluoro-flicker">VARIANCE</h1>
-            <div className="title-sub">A Backroom Poker Story</div>
+          <div className="title-menu">
+            <img className="title-menu__logo" src={`${base}ui/variance_logo.png`} alt="VARIANCE — A Backroom Poker Story" />
 
-            <button
-              className="primary-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                setPhase('opening');
-                setLineIndex(0);
-              }}
-            >
-              시작하기
-            </button>
-
-            {hasSave && (
-              <button
-                className="ghost-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const saved = loadSave();
-                  if (saved) dispatch({ type: 'CONTINUE', state: saved });
+            <div className="title-menu__buttons">
+              <MenuButton
+                onClick={() => {
+                  setPhase('opening');
+                  setLineIndex(0);
                 }}
               >
-                이어하기
-              </button>
-            )}
+                새 게임
+              </MenuButton>
 
-            <button
-              className="ghost-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (confirm('저장된 진행 상황을 모두 초기화할까요?')) {
-                  resetSave();
-                  dispatch({ type: 'RESET_GAME' });
-                }
-              }}
-            >
-              Reset Game
-            </button>
+              {hasSave && (
+                <MenuButton
+                  onClick={() => {
+                    const saved = loadSave();
+                    if (saved) dispatch({ type: 'CONTINUE', state: saved });
+                  }}
+                >
+                  이어하기
+                </MenuButton>
+              )}
+
+              <MenuButton
+                variant="secondary"
+                onClick={() => {
+                  if (confirm('저장된 진행 상황을 모두 초기화할까요?')) {
+                    resetSave();
+                    dispatch({ type: 'RESET_GAME' });
+                  }
+                }}
+              >
+                Reset Game
+              </MenuButton>
+            </div>
           </div>
         )}
 
