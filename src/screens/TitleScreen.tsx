@@ -33,6 +33,7 @@ const OPENING_LINES = [
   '그런데 손님은 계속 온다.',
   '……',
   '다행이지 않냐고...?',
+  '??? : 야! 오픈 안 하냐?',
 ];
 
 // OPENING_LINES와 1:1로 대응하는 배경 키. 인덱스별로 어떤 장면인지는
@@ -69,6 +70,7 @@ const OPENING_BACKGROUNDS = [
   'room_47days_later',
   'room_47days_later',
   'room_47days_later',
+  'room_47days_later',
 ];
 
 const KEYWORD = /(VARIANCE|47일)/g;
@@ -96,11 +98,16 @@ export default function TitleScreen() {
     playSfx('cardShuffle');
   }, []);
 
-  const isLastLine = lineIndex === OPENING_LINES.length - 1;
-  const isHero = OPENING_LINES[lineIndex] === 'VARIANCE.';
+  // lineIndex가 OPENING_LINES.length에 도달하면 대사 없이 "영업 시작"
+  // 버튼만 보여주는 마지막 화면(센티널 상태)이다.
+  const isButtonOnly = lineIndex >= OPENING_LINES.length;
+  const isHero = !isButtonOnly && OPENING_LINES[lineIndex] === 'VARIANCE.';
+  const openingBgKey = isButtonOnly
+    ? OPENING_BACKGROUNDS[OPENING_BACKGROUNDS.length - 1]
+    : OPENING_BACKGROUNDS[lineIndex];
 
   function advance() {
-    if (!isLastLine) setLineIndex((i) => i + 1);
+    if (!isButtonOnly) setLineIndex((i) => i + 1);
   }
 
   const base = import.meta.env.BASE_URL;
@@ -123,7 +130,7 @@ export default function TitleScreen() {
       {phase === 'opening' && (
         <>
           <div className="app-frame__bg">
-            <RoomBackground bgKey={OPENING_BACKGROUNDS[lineIndex]} />
+            <RoomBackground bgKey={openingBgKey} />
           </div>
           <div className="app-frame__scrim" />
           <div className="opening-overlay" />
@@ -133,7 +140,7 @@ export default function TitleScreen() {
       <div
         className="scene-body"
         style={{ justifyContent: 'center', gap: 28 }}
-        onClick={phase === 'opening' && !isLastLine ? advance : undefined}
+        onClick={phase === 'opening' && !isButtonOnly ? advance : undefined}
       >
         {phase === 'title' && (
           <div className="title-menu">
@@ -174,26 +181,26 @@ export default function TitleScreen() {
           </div>
         )}
 
-        {phase === 'opening' && (
+        {phase === 'opening' && isButtonOnly && (
+          <button
+            className="primary-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch({ type: 'START_NEW_GAME' });
+            }}
+          >
+            영업 시작
+          </button>
+        )}
+
+        {phase === 'opening' && !isButtonOnly && (
           <>
             <div className={`opening-text ${isHero ? 'opening-text--hero' : ''}`}>
               {renderLine(OPENING_LINES[lineIndex])}
             </div>
-            {isLastLine ? (
-              <button
-                className="primary-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  dispatch({ type: 'START_NEW_GAME' });
-                }}
-              >
-                영업 시작
-              </button>
-            ) : (
-              <div className="center tap-hint" style={{ position: 'static' }}>
-                탭하여 계속
-              </div>
-            )}
+            <div className="center tap-hint" style={{ position: 'static' }}>
+              탭하여 계속
+            </div>
           </>
         )}
       </div>
