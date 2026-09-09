@@ -35,6 +35,42 @@ const OPENING_LINES = [
   '다행이지 않냐고...?',
 ];
 
+// OPENING_LINES와 1:1로 대응하는 배경 키. 인덱스별로 어떤 장면인지는
+// SCENE 주석으로 묶어뒀다 (문구를 바꿔도 이 배열의 순서/길이만 맞으면 됨).
+const OPENING_BACKGROUNDS = [
+  // SCENE 1 — 지하 입구
+  'intro_stairwell_variance',
+  'intro_stairwell_variance',
+  'intro_stairwell_variance',
+  // SCENE 2 — 처음 보는 룸 내부
+  'room',
+  'room',
+  // SCENE 3A — 포커판 생활
+  'night_montage',
+  'night_montage',
+  'night_montage',
+  // SCENE 3B — 생활도박꾼의 빠듯함
+  'worn_cigarette_pack',
+  'worn_cigarette_pack',
+  // SCENE 4 — 박사장 / 열쇠 인계
+  'baksa_handoff',
+  'baksa_handoff',
+  'baksa_handoff',
+  'baksa_handoff',
+  'baksa_handoff',
+  'baksa_handoff',
+  'baksa_handoff',
+  'baksa_handoff',
+  'baksa_handoff',
+  // SCENE 5 — 47일 후 현재 (남은 마무리 줄들도 같은 장면으로 이어간다)
+  'room_47days_later',
+  'room_47days_later',
+  'room_47days_later',
+  'room_47days_later',
+  'room_47days_later',
+  'room_47days_later',
+];
+
 const KEYWORD = /(VARIANCE|47일)/g;
 
 function renderLine(text: string) {
@@ -87,7 +123,7 @@ export default function TitleScreen() {
       {phase === 'opening' && (
         <>
           <div className="app-frame__bg">
-            <RoomBackground bgKey="intro_stairwell_variance" />
+            <RoomBackground bgKey={OPENING_BACKGROUNDS[lineIndex]} />
           </div>
           <div className="app-frame__scrim" />
           <div className="opening-overlay" />
