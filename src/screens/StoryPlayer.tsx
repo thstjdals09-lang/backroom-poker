@@ -19,7 +19,11 @@ function stars(n: number) {
 }
 
 // 「소문명」처럼 낫표로 감싼 구간을 노란색으로 강조해서 보여준다.
-function renderRich(text: string) {
+// beat 전환 시 lineIndex 리셋 effect가 커밋되기 전에 한 프레임 먼저
+// 렌더링되면서(줄 수가 적은 다음 beat에) 이전 beat 기준 lineIndex가
+// 잠깐 범위를 벗어날 수 있어 방어적으로 처리한다.
+function renderRich(text: string | undefined) {
+  if (!text) return null;
   return text.split(/(「[^」]*」)/g).map((part, i) =>
     part.startsWith('「') && part.endsWith('」') ? (
       <strong key={i} style={{ color: 'var(--accent)', fontWeight: 400 }}>
@@ -95,13 +99,16 @@ export default function StoryPlayer() {
 
   switch (beat.type) {
     case 'narration': {
-      const isLast = lineIndex >= beat.lines.length - 1;
+      // beat이 막 바뀐 프레임엔 lineIndex 리셋 effect가 아직 커밋 전이라
+      // 이전 beat 기준 lineIndex가 새 beat.lines 범위를 벗어날 수 있다.
+      const safeIndex = Math.min(lineIndex, beat.lines.length - 1);
+      const isLast = safeIndex >= beat.lines.length - 1;
       body = (
         <div
           className="tap-area"
           onClick={() => (isLast ? goto(beat.next) : setLineIndex((i) => i + 1))}
         >
-          <div className="narration-text">{renderRich(beat.lines[lineIndex])}</div>
+          <div className="narration-text">{renderRich(beat.lines[safeIndex])}</div>
           <div className="center tap-hint" style={{ position: 'static', marginTop: 10 }}>
             탭하여 계속
           </div>
@@ -110,7 +117,8 @@ export default function StoryPlayer() {
       break;
     }
     case 'dialogue': {
-      const isLast = lineIndex >= beat.lines.length - 1;
+      const safeIndex = Math.min(lineIndex, beat.lines.length - 1);
+      const isLast = safeIndex >= beat.lines.length - 1;
       const npc = beat.portrait ? state.npcs[beat.portrait] : undefined;
       body = (
         <div
@@ -122,7 +130,7 @@ export default function StoryPlayer() {
           )}
           <div className="dialogue-box">
             <div className="dialogue-speaker">{beat.speaker}</div>
-            <div className="dialogue-line">{renderRich(beat.lines[lineIndex])}</div>
+            <div className="dialogue-line">{renderRich(beat.lines[safeIndex])}</div>
             <div className="tap-hint">▶</div>
           </div>
         </div>
