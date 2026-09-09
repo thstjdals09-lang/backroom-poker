@@ -448,10 +448,6 @@ const beats: Beat[] = [
       { label: '내 생각만 간단히 말해주자.', next: 'd3j_a1' },
       {
         label: '아까 액션부터 다시 생각해보자.',
-        effects: [
-          { target: 'npcAffinity', npcId: 'jaehoon', delta: 15, label: '재훈 친밀도' },
-          { target: 'flag', key: 'jaehoonBond1', value: true },
-        ],
         next: 'd3j_b1',
       },
       { label: '뭔가 있어 보이는 말을 해보자.', next: 'd3j_c1' },
@@ -546,6 +542,17 @@ const beats: Beat[] = [
     speaker: '재훈',
     portrait: 'jaehoon',
     lines: ['그러게요.'],
+    next: 'd3j_b_effects',
+  },
+  {
+    // 대화를 끝까지 같이 해준 것에 대한 보상이므로, 선택한 순간이
+    // 아니라 대화가 다 끝난 뒤에 호감도가 오르는 걸 보여준다.
+    id: 'd3j_b_effects',
+    type: 'effects',
+    effects: [
+      { target: 'npcAffinity', npcId: 'jaehoon', delta: 15, label: '재훈 친밀도' },
+      { target: 'flag', key: 'jaehoonBond1', value: true },
+    ],
     next: 'd3j_wrap_branch',
   },
 
