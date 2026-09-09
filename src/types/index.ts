@@ -57,14 +57,15 @@ export type EffectTarget =
   | 'npcAffinity'
   | 'flag'
   | 'ledger'
-  | 'trait';
+  | 'trait'
+  | 'rumor';
 
 export interface Effect {
   target: EffectTarget;
   delta?: number; // mental / personalMoney / roomPoint / roomCash / roomReputation / npcAffinity / trait 에 사용
   npcId?: string; // target === 'npcAffinity' 일 때 필수
   key?: string; // target === 'flag' | 'ledger' | 'trait' 일 때 필수 (flag 이름 / ledger 항목명 / trait 축 이름)
-  value?: string | number | boolean; // target === 'flag' 일 때 사용 (미지정시 true)
+  value?: string | number | boolean; // target === 'flag' | 'rumor' 일 때 사용 (rumor는 소문 이름 문자열)
   label?: string; // 팝업에 표시할 커스텀 라벨 (없으면 자동 생성)
 }
 
@@ -111,6 +112,15 @@ export type Beat =
   | { id: string; type: 'tableStopped'; requirement: number; next: string }
   | { id: string; type: 'defense'; scenarioSetId: string; requirement: number; next: string }
   | { id: string; type: 'dayResult'; next: string }
+  | {
+      // 플레이어 조작 없이 flags[flagKey] 값에 따라 자동으로 분기하는 beat.
+      // Day1 선택 결과 등 이미 정해진 상태값으로 스토리가 갈릴 때 쓴다.
+      id: string;
+      type: 'branch';
+      flagKey: string;
+      cases: Record<string, string>; // flag 값(문자열로 변환) -> 다음 beat id
+      fallback: string; // 일치하는 case가 없을 때
+    }
   | { id: string; type: 'end' };
 
 // ---------------- Defense (방어) Poker Scenarios ----------------

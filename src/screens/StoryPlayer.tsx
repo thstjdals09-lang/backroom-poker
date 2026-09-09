@@ -18,6 +18,19 @@ function stars(n: number) {
   return '★'.repeat(full) + '☆'.repeat(5 - full);
 }
 
+// 「소문명」처럼 낫표로 감싼 구간을 노란색으로 강조해서 보여준다.
+function renderRich(text: string) {
+  return text.split(/(「[^」]*」)/g).map((part, i) =>
+    part.startsWith('「') && part.endsWith('」') ? (
+      <strong key={i} style={{ color: 'var(--accent)', fontWeight: 400 }}>
+        {part}
+      </strong>
+    ) : (
+      <span key={i}>{part}</span>
+    )
+  );
+}
+
 // 현재 day에 맞는 스크립트 세트를 고른다. Day3 이후를 추가할 땐
 // 이 표에 한 줄만 더하면 된다.
 const DAY_SCRIPTS: Record<number, { beats: typeof day1Beats; backgrounds: typeof day1Backgrounds; portraits: typeof day1Portraits }> = {
@@ -48,6 +61,11 @@ export default function StoryPlayer() {
     } else if (beat.type === 'effects') {
       dispatch({ type: 'APPLY_EFFECTS', effects: beat.effects });
       dispatch({ type: 'GOTO', beatId: beat.next });
+    } else if (beat.type === 'branch') {
+      const raw = state.flags[beat.flagKey];
+      const key = raw === undefined ? '' : String(raw);
+      const target = beat.cases[key] ?? beat.fallback;
+      dispatch({ type: 'GOTO', beatId: target });
     } else if (beat.type === 'end') {
       dispatch({ type: 'GO_HOME' });
     } else if (beat.type === 'sceneLabel') {
@@ -83,7 +101,7 @@ export default function StoryPlayer() {
           className="tap-area"
           onClick={() => (isLast ? goto(beat.next) : setLineIndex((i) => i + 1))}
         >
-          <div className="narration-text">{beat.lines[lineIndex]}</div>
+          <div className="narration-text">{renderRich(beat.lines[lineIndex])}</div>
           <div className="center tap-hint" style={{ position: 'static', marginTop: 10 }}>
             탭하여 계속
           </div>
@@ -104,7 +122,7 @@ export default function StoryPlayer() {
           )}
           <div className="dialogue-box">
             <div className="dialogue-speaker">{beat.speaker}</div>
-            <div className="dialogue-line">{beat.lines[lineIndex]}</div>
+            <div className="dialogue-line">{renderRich(beat.lines[lineIndex])}</div>
             <div className="tap-hint">▶</div>
           </div>
         </div>
@@ -314,6 +332,8 @@ export default function StoryPlayer() {
       return <DayResultScreen bgKey={activeBackgrounds[beat.id]} onContinue={() => goto(beat.next)} />;
     }
     case 'end':
+      return null;
+    case 'branch':
       return null;
   }
 

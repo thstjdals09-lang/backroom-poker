@@ -19,6 +19,9 @@ export interface GameState {
   // 플레이어의 운영 선택이 누적되는 성향 축(예: regularVsRule, leniency).
   // 지금은 UI에 노출하지 않고 이후 storylet 분기용으로만 쌓아둔다.
   traits: Record<string, number>;
+  // 플레이어가 지금까지 획득한 소문 목록 (모아보기용). 못 얻은 소문은
+  // 존재 자체를 모르는 게 맞으므로 여기 없으면 그냥 없는 것으로 취급한다.
+  rumors: string[];
   pendingChanges: StatChangeEntry[]; // 화면에 보여줄 "전 → 후" 팝업 큐
 }
 
@@ -46,6 +49,7 @@ function makeInitialState(): GameState {
     flags: {},
     ledger: { roomRevenue: 0, pokerRevenue: 0, creditLoss: 0, opEx: 0 },
     traits: {},
+    rumors: [],
     pendingChanges: [],
   };
 }
@@ -100,6 +104,7 @@ export function applyEffects(
   let flags = state.flags;
   let ledger = state.ledger;
   let traits = state.traits;
+  let rumors = state.rumors;
   const changes: StatChangeEntry[] = [];
 
   for (const effect of effects) {
@@ -174,10 +179,18 @@ export function applyEffects(
         }
         break;
       }
+      case 'rumor': {
+        // 소문 획득. "소문 획득 「...」" 문구는 스토리 beat 자체에서
+        // 보여주므로 여기선 목록에 조용히 추가만 한다(중복 방지).
+        if (typeof effect.value === 'string' && !rumors.includes(effect.value)) {
+          rumors = [...rumors, effect.value];
+        }
+        break;
+      }
     }
   }
 
-  return { state: { ...state, player, room, npcs, flags, ledger, traits }, changes };
+  return { state: { ...state, player, room, npcs, flags, ledger, traits, rumors }, changes };
 }
 
 function reducer(state: GameState, action: Action): GameState {
@@ -263,8 +276,9 @@ export function loadSave(): GameState | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as GameState;
     if (!parsed.player || !parsed.room) return null;
-    // traits 필드가 없던 이전 세이브도 안전하게 이어할 수 있도록 보정.
+    // traits/rumors 필드가 없던 이전 세이브도 안전하게 이어할 수 있도록 보정.
     if (!parsed.traits) parsed.traits = {};
+    if (!parsed.rumors) parsed.rumors = [];
     return parsed;
   } catch {
     return null;
