@@ -237,8 +237,8 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 78%;
-  gap: 10px;
+  width: 68%;
+  gap: 4px;
 }
 
 .menu-btn {
@@ -282,15 +282,29 @@ button {
   font-family: 'Noto Serif KR', 'Nanum Myeongjo', Batang, serif;
   font-weight: 600;
   letter-spacing: 0.08em;
+  font-size: 16px;
   color: #e6d3a0;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
-.menu-btn__label--primary {
-  font-size: 17px;
+
+.text-link-btn {
+  margin-top: 16px;
+  padding: 6px 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  font-family: 'Noto Serif KR', 'Nanum Myeongjo', Batang, serif;
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  color: rgba(230, 211, 160, 0.45);
+  transition: color 0.15s ease, opacity 0.15s ease;
 }
-.menu-btn__label--secondary {
-  font-size: 14.5px;
-  opacity: 0.72;
+.text-link-btn:hover,
+.text-link-btn:focus-visible {
+  color: rgba(230, 211, 160, 0.75);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .dialogue-box {

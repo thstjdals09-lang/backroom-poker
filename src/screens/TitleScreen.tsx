@@ -3,6 +3,7 @@ import { useGame, resetSave, loadSave } from '../state/gameContext';
 import { playSfx } from '../audio/soundManager';
 import RoomBackground from '../components/RoomBackground';
 import MenuButton from '../components/MenuButton';
+import TextLinkButton from '../components/TextLinkButton';
 
 // Day 1 오프닝 — 타이틀 화면 다음, "영업 시작"을 누르기 전까지 보여주는
 // 도입 내레이션. 한 화면에 1~2문장만 담아 텍스트를 크게 보여준다.
@@ -123,19 +124,18 @@ export default function TitleScreen() {
                   이어하기
                 </MenuButton>
               )}
-
-              <MenuButton
-                variant="secondary"
-                onClick={() => {
-                  if (confirm('저장된 진행 상황을 모두 초기화할까요?')) {
-                    resetSave();
-                    dispatch({ type: 'RESET_GAME' });
-                  }
-                }}
-              >
-                Reset Game
-              </MenuButton>
             </div>
+
+            <TextLinkButton
+              onClick={() => {
+                if (confirm('저장된 진행 상황을 모두 초기화할까요?')) {
+                  resetSave();
+                  dispatch({ type: 'RESET_GAME' });
+                }
+              }}
+            >
+              Reset Game
+            </TextLinkButton>
           </div>
         )}
 

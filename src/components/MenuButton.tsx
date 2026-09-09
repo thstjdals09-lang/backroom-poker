@@ -7,18 +7,16 @@ import type { ReactNode } from 'react';
 export default function MenuButton({
   children,
   onClick,
-  variant = 'primary',
 }: {
   children: ReactNode;
   onClick: () => void;
-  variant?: 'primary' | 'secondary';
 }) {
   const base = import.meta.env.BASE_URL;
   return (
     <button className="menu-btn" onClick={onClick} type="button">
       <img className="menu-btn__bg menu-btn__bg--idle" src={`${base}ui/menu_button_idle.png`} alt="" />
       <img className="menu-btn__bg menu-btn__bg--active" src={`${base}ui/menu_button_active.png`} alt="" />
-      <span className={`menu-btn__label menu-btn__label--${variant}`}>{children}</span>
+      <span className="menu-btn__label">{children}</span>
     </button>
   );
 }
