@@ -64,7 +64,8 @@ type Action =
   | { type: 'NPC_DISCOVER'; npcId: string; note: string }
   | { type: 'GO_HOME' }
   | { type: 'RESET_GAME' }
-  | { type: 'START_DAY'; day: number; beatId: string };
+  | { type: 'START_DAY'; day: number; beatId: string }
+  | { type: 'DEBUG_JUMP'; day: number; beatId: string; flags?: Flags };
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
@@ -237,6 +238,26 @@ function reducer(state: GameState, action: Action): GameState {
         ledger: { roomRevenue: 0, pokerRevenue: 0, creditLoss: 0, opEx: 0 },
         pendingChanges: [],
       };
+    case 'DEBUG_JUMP': {
+      // 테스트용: 기본 상태에서 시작하되 지정된 day/beat/flags로 바로 진입한다.
+      // NPC는 전부 이미 등장/파악된 것으로 처리해 중간 장면이 자연스럽게 보이게 한다.
+      const base = makeInitialState();
+      return {
+        ...base,
+        phase: 'playing',
+        day: action.day,
+        currentBeatId: action.beatId,
+        flags: { ...base.flags, ...action.flags },
+        room: {
+          ...base.room,
+          currentPlayers: Object.keys(base.npcs),
+        },
+        npcs: Object.fromEntries(
+          Object.entries(base.npcs).map(([id, npc]) => [id, { ...npc, discovered: true }])
+        ),
+        pendingChanges: [],
+      };
+    }
     default:
       return state;
   }

@@ -4,6 +4,7 @@ import { playSfx } from '../audio/soundManager';
 import RoomBackground from '../components/RoomBackground';
 import MenuButton from '../components/MenuButton';
 import TextLinkButton from '../components/TextLinkButton';
+import { debugCheckpoints } from '../data/debugCheckpoints';
 
 // Day 1 오프닝 — 타이틀 화면 다음, "영업 시작"을 누르기 전까지 보여주는
 // 도입 내레이션. 한 화면에 1~2문장만 담아 텍스트를 크게 보여준다.
@@ -93,6 +94,8 @@ export default function TitleScreen() {
   const { dispatch, hasSave } = useGame();
   const [phase, setPhase] = useState<Phase>('title');
   const [lineIndex, setLineIndex] = useState(0);
+  const [showDebug, setShowDebug] = useState(false);
+  const [debugPick, setDebugPick] = useState(debugCheckpoints[0].id);
 
   useEffect(() => {
     playSfx('cardShuffle');
@@ -178,6 +181,48 @@ export default function TitleScreen() {
             >
               Reset Game
             </TextLinkButton>
+
+            <TextLinkButton onClick={() => setShowDebug((v) => !v)}>
+              {showDebug ? '▾ 테스트용 시작 지점 닫기' : '▸ 테스트용 시작 지점'}
+            </TextLinkButton>
+
+            {showDebug && (
+              <div
+                className="pixel-panel pixel-panel--alt mt"
+                style={{ width: '78%', textAlign: 'left' }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <select
+                  value={debugPick}
+                  onChange={(e) => setDebugPick(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px',
+                    background: 'var(--bg-2)',
+                    color: 'var(--text)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 3,
+                    fontSize: 12.5,
+                  }}
+                >
+                  {debugCheckpoints.map((cp) => (
+                    <option key={cp.id} value={cp.id}>
+                      {cp.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  className="ghost-btn"
+                  onClick={() => {
+                    const cp = debugCheckpoints.find((c) => c.id === debugPick);
+                    if (!cp) return;
+                    dispatch({ type: 'DEBUG_JUMP', day: cp.day, beatId: cp.beatId, flags: cp.flags });
+                  }}
+                >
+                  이 지점부터 시작
+                </button>
+              </div>
+            )}
           </div>
         )}
 
