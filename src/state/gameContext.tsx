@@ -32,7 +32,7 @@ function makeInitialState(): GameState {
       personalMoney: 0,
     },
     room: {
-      name: 'ACE',
+      name: 'VARIANCE',
       cash: 742000,
       point: 18400,
       reputation: 1,

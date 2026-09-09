@@ -185,6 +185,45 @@ button {
     0 0 14px rgba(0, 0, 0, 0.6);
 }
 
+/* ---------- opening (title screen) ---------- */
+.opening-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(6, 7, 4, 0.35) 0%, rgba(6, 7, 4, 0.55) 55%, rgba(6, 7, 4, 0.85) 100%);
+}
+.opening-text {
+  color: var(--fluoro);
+  font-size: 20px;
+  line-height: 2.1;
+  white-space: pre-line;
+  text-align: center;
+  padding: 0 14px;
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.95),
+    0 0 20px rgba(0, 0, 0, 0.7);
+}
+.opening-text--hero {
+  font-family: var(--font-display);
+  font-size: 40px;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+.title-hero {
+  font-family: var(--font-display);
+  font-size: 46px;
+  letter-spacing: 0.08em;
+  color: var(--fluoro);
+  margin: 0 0 6px;
+  text-shadow: 0 0 24px rgba(238, 243, 216, 0.35);
+}
+.title-sub {
+  color: var(--text-dim);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  margin-bottom: 32px;
+}
+
 .dialogue-box {
   border: 2px solid var(--border);
   background: var(--panel);

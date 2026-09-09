@@ -9,6 +9,9 @@ import type { Beat } from '../types';
 
 const beats: Beat[] = [
   // ---------------- 1. 스토리 ----------------
+  // 이 섹션(s1_location ~ s1_start_cta)은 새 타이틀 화면의 자체 오프닝
+  // 시퀀스로 대체되어 더 이상 진입점이 아니다(START_BEAT_ID 참고).
+  // 기존 세이브 호환을 위해 삭제하지 않고 그대로 남겨둔다.
   {
     id: 's1_location',
     type: 'narration',
@@ -18,7 +21,7 @@ const beats: Beat[] = [
       '간판도 없다.',
       '건물 옆 철문을 열고 지하로 내려가면 낡은 문 하나가 나온다.',
       '문에는 A4용지에 매직으로 적혀 있다.',
-      '♠ ACE ♠',
+      '♠ VARIANCE ♠',
     ],
     next: 's1_room',
   },
@@ -416,6 +419,8 @@ const beats: Beat[] = [
   { id: 'day1_complete', type: 'end' },
 ];
 
-export const START_BEAT_ID = 's1_location';
+// 새 타이틀 화면이 오프닝(골목/박사장 장면)을 자체적으로 보여준 뒤
+// "영업 시작" 버튼으로 여기부터 Day 1 본편(태식 등장)을 시작한다.
+export const START_BEAT_ID = 'npc_taesik_enter';
 
 export const day1Beats: Record<string, Beat> = Object.fromEntries(beats.map((b) => [b.id, b]));
